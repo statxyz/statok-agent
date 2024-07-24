@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"sync"
 	"syscall"
 	"time"
@@ -90,6 +91,10 @@ func startDiskCollect() {
 		}
 
 		for _, partition := range partitions {
+			if !strings.HasPrefix(partition.Device, "/dev/") {
+				continue
+			}
+
 			usage, err := disk.Usage(partition.Mountpoint)
 			if err != nil {
 				continue
