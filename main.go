@@ -6,7 +6,6 @@ import (
 	"github.com/shirou/gopsutil/v4/disk"
 	"github.com/shirou/gopsutil/v4/mem"
 	"github.com/shirou/gopsutil/v4/net"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -84,14 +83,24 @@ func startDiskCollect() {
 
 	for {
 		time.Sleep(time.Second * 10)
-		usage, err := disk.Usage("/")
+
+		partitions, err := disk.Partitions(false)
 		if err != nil {
 			continue
 		}
 
-		gostatok.EventValue(diskMetricName, float64(byteToMb(usage.Total)), "total")
-		gostatok.EventValue(diskMetricName, float64(byteToMb(usage.Used)), "used")
-		gostatok.EventValue(diskMetricName, float64(byteToMb(usage.Free)), "available")
+		for _, partition := range partitions {
+			usage, err := disk.Usage(partition.Mountpoint)
+			if err != nil {
+				continue
+			}
+
+			diskName := partition.Device
+
+			gostatok.EventValue(diskMetricName, float64(byteToMb(usage.Total)), "total", diskName)
+			gostatok.EventValue(diskMetricName, float64(byteToMb(usage.Used)), "used", diskName)
+			gostatok.EventValue(diskMetricName, float64(byteToMb(usage.Free)), "available", diskName)
+		}
 	}
 }
 
@@ -107,7 +116,6 @@ func collectDiskIO() {
 
 		currentIOCounters, err := disk.IOCounters()
 		if err != nil {
-			log.Printf("Error collecting disk I/O counters: %v", err)
 			continue
 		}
 
@@ -124,10 +132,10 @@ func collectDiskIO() {
 						continue
 					}
 
-					gostatok.Event(diskIOThroughputMetricName, int(byteToMb(readBytesDiff)), device, "read_bytes")
-					gostatok.Event(diskIOThroughputMetricName, int(byteToMb(writeBytesDiff)), device, "write_bytes")
-					gostatok.Event(diskIOReadsWritesMetricName, int(readCountDiff), device, "read_count")
-					gostatok.Event(diskIOReadsWritesMetricName, int(writeCountDiff), device, "write_count")
+					gostatok.Event(diskIOThroughputMetricName, int(byteToMb(readBytesDiff)), device, "read")
+					gostatok.Event(diskIOThroughputMetricName, int(byteToMb(writeBytesDiff)), device, "write")
+					gostatok.Event(diskIOReadsWritesMetricName, int(readCountDiff), device, "read")
+					gostatok.Event(diskIOReadsWritesMetricName, int(writeCountDiff), device, "write")
 				}
 			}
 		}
@@ -148,7 +156,6 @@ func collectNetwork() {
 
 		currentNetIOCounters, err := net.IOCounters(true)
 		if err != nil {
-			log.Printf("Error collecting network I/O counters: %v", err)
 			continue
 		}
 
@@ -193,10 +200,10 @@ func (c *CustomRoundTripper) RoundTrip(req *http.Request) (*http.Response, error
 func main() {
 	gostatok.Init(gostatok.Options{
 		APIKey: "Test",
-		HTTPClient: &http.Client{
-			Transport: &CustomRoundTripper{
-				Proxied: http.DefaultTransport,
-			}},
+		//HTTPClient: &http.Client{
+		//	Transport: &CustomRoundTripper{
+		//		Proxied: http.DefaultTransport,
+		//	}},
 	})
 
 	go startCPUCollect()
