@@ -15,7 +15,7 @@ import (
 )
 
 func startCPUCollect() {
-	const cpuUsageMetricName = "host_cpu_usage"
+	const cpuUsageMetricName = "host_cpu_usage_v3"
 
 	var prevTimes cpu.TimesStat
 
@@ -48,9 +48,9 @@ func startCPUCollect() {
 			systemPct := (systemDiff / totalDiff) * 100
 			idlePct := (idleDiff / totalDiff) * 100
 
-			gostatok.EventValue(cpuUsageMetricName, userPct, "user")
-			gostatok.EventValue(cpuUsageMetricName, systemPct, "system")
-			gostatok.EventValue(cpuUsageMetricName, idlePct, "idle")
+			gostatok.EventValue(cpuUsageMetricName, userPct, getHostname(), "user")
+			gostatok.EventValue(cpuUsageMetricName, systemPct, getHostname(), "system")
+			gostatok.EventValue(cpuUsageMetricName, idlePct, getHostname(), "idle")
 
 			prevTimes = curr
 		}
@@ -62,7 +62,7 @@ func byteToMb(bytes uint64) uint64 {
 }
 
 func startMemoryCollect() {
-	const memoryMetricName = "host_memory"
+	const memoryMetricName = "host_memory_v3"
 
 	for {
 		time.Sleep(time.Second * 5)
@@ -71,15 +71,15 @@ func startMemoryCollect() {
 			continue
 		}
 
-		gostatok.EventValue(memoryMetricName, float64(byteToMb(v.Total)), "total")
-		gostatok.EventValue(memoryMetricName, float64(byteToMb(v.Available)), "available")
-		gostatok.EventValue(memoryMetricName, float64(byteToMb(v.Used)), "used")
-		gostatok.EventValue(memoryMetricName, float64(byteToMb(v.Free)), "free")
+		gostatok.EventValue(memoryMetricName, float64(byteToMb(v.Total)), getHostname(), "total")
+		gostatok.EventValue(memoryMetricName, float64(byteToMb(v.Available)), getHostname(), "available")
+		gostatok.EventValue(memoryMetricName, float64(byteToMb(v.Used)), getHostname(), "used")
+		gostatok.EventValue(memoryMetricName, float64(byteToMb(v.Free)), getHostname(), "free")
 	}
 }
 
 func startDiskCollect() {
-	const diskMetricName = "host_disk"
+	const diskMetricName = "host_disk_v3"
 
 	for {
 		time.Sleep(time.Second * 10)
@@ -97,16 +97,16 @@ func startDiskCollect() {
 
 			diskName := partition.Device
 
-			gostatok.EventValue(diskMetricName, float64(byteToMb(usage.Total)), "total", diskName)
-			gostatok.EventValue(diskMetricName, float64(byteToMb(usage.Used)), "used", diskName)
-			gostatok.EventValue(diskMetricName, float64(byteToMb(usage.Free)), "available", diskName)
+			gostatok.EventValue(diskMetricName, float64(byteToMb(usage.Total)), getHostname(), diskName, "total")
+			gostatok.EventValue(diskMetricName, float64(byteToMb(usage.Used)), getHostname(), diskName, "used")
+			gostatok.EventValue(diskMetricName, float64(byteToMb(usage.Free)), getHostname(), diskName, "available")
 		}
 	}
 }
 
 func collectDiskIO() {
-	const diskIOThroughputMetricName = "host_disk_io_throughput"
-	const diskIOReadsWritesMetricName = "host_disk_io_reads_writes"
+	const diskIOThroughputMetricName = "host_disk_io_throughput_v3"
+	const diskIOReadsWritesMetricName = "host_disk_io_read_write_v3"
 
 	var prevIOCounters map[string]disk.IOCountersStat
 	var mu sync.Mutex
@@ -132,10 +132,10 @@ func collectDiskIO() {
 						continue
 					}
 
-					gostatok.Event(diskIOThroughputMetricName, int(byteToMb(readBytesDiff)), device, "read")
-					gostatok.Event(diskIOThroughputMetricName, int(byteToMb(writeBytesDiff)), device, "write")
-					gostatok.Event(diskIOReadsWritesMetricName, int(readCountDiff), device, "read")
-					gostatok.Event(diskIOReadsWritesMetricName, int(writeCountDiff), device, "write")
+					gostatok.Event(diskIOThroughputMetricName, int(byteToMb(readBytesDiff)), getHostname(), device, "read")
+					gostatok.Event(diskIOThroughputMetricName, int(byteToMb(writeBytesDiff)), getHostname(), device, "write")
+					gostatok.Event(diskIOReadsWritesMetricName, int(readCountDiff), getHostname(), device, "read")
+					gostatok.Event(diskIOReadsWritesMetricName, int(writeCountDiff), getHostname(), device, "write")
 				}
 			}
 		}
@@ -145,8 +145,8 @@ func collectDiskIO() {
 }
 
 func collectNetwork() {
-	const networkThroughputMetricName = "host_network_throughput"
-	const networkPacketsMetricName = "host_network_packets"
+	const networkThroughputMetricName = "host_network_throughput_v3"
+	const networkPacketsMetricName = "host_network_packets_v3"
 
 	var prevNetIOCounters map[string]net.IOCountersStat
 	var mu sync.Mutex
@@ -172,10 +172,10 @@ func collectNetwork() {
 						continue
 					}
 
-					gostatok.Event(networkThroughputMetricName, int(bytesSentDiff), currentCounter.Name, "tx")
-					gostatok.Event(networkThroughputMetricName, int(bytesRecvDiff), currentCounter.Name, "rx")
-					gostatok.Event(networkPacketsMetricName, int(packetsSentDiff), currentCounter.Name, "tx")
-					gostatok.Event(networkPacketsMetricName, int(packetsRecvDiff), currentCounter.Name, "rx")
+					gostatok.Event(networkThroughputMetricName, int(bytesSentDiff), getHostname(), currentCounter.Name, "sent")
+					gostatok.Event(networkThroughputMetricName, int(bytesRecvDiff), getHostname(), currentCounter.Name, "received")
+					gostatok.Event(networkPacketsMetricName, int(packetsSentDiff), getHostname(), currentCounter.Name, "sent")
+					gostatok.Event(networkPacketsMetricName, int(packetsRecvDiff), getHostname(), currentCounter.Name, "received")
 				}
 			}
 		}
@@ -185,6 +185,16 @@ func collectNetwork() {
 		}
 		mu.Unlock()
 	}
+}
+
+var hostname string
+
+func getHostname() string {
+	if hostname != "" {
+		return hostname
+	}
+	hostname, _ = os.Hostname()
+	return hostname
 }
 
 type CustomRoundTripper struct {
