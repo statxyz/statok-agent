@@ -6,6 +6,7 @@ import (
 	"github.com/shirou/gopsutil/v4/mem"
 	"github.com/shirou/gopsutil/v4/net"
 	"github.com/statxyz/statok-go"
+	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -95,7 +96,13 @@ func startDiskCollect() {
 				continue
 			}
 
+			if usage.Total == 0 && usage.Free == 0 && usage.Used == 0 {
+				continue
+			}
+
 			diskName := partition.Device
+
+			log.Printf("%s %v", diskName, usage.Total)
 
 			gostatok.EventValue(diskMetricName, float64(byteToMb(usage.Total)), getHostname(), diskName, "total")
 			gostatok.EventValue(diskMetricName, float64(byteToMb(usage.Used)), getHostname(), diskName, "used")
