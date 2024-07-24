@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/godknowsiamgood/gostatok"
 	"github.com/shirou/gopsutil/v4/cpu"
 	"github.com/shirou/gopsutil/v4/disk"
 	"github.com/shirou/gopsutil/v4/mem"
 	"github.com/shirou/gopsutil/v4/net"
+	"github.com/statxyz/statok-go"
 	"net/http"
 	"os"
 	"os/signal"
