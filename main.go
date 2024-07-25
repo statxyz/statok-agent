@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"strings"
 	"sync"
 	"syscall"
@@ -153,6 +154,11 @@ func collectDiskIO() {
 	}
 }
 
+func isPhysicalNetworkInterface(iface string) bool {
+	_, err := os.Stat(filepath.Join("/sys/class/net", iface, "device"))
+	return !os.IsNotExist(err)
+}
+
 func collectNetwork() {
 	const networkThroughputMetricName = "host_network_throughput_v3"
 	const networkPacketsMetricName = "host_network_packets_v3"
@@ -171,6 +177,9 @@ func collectNetwork() {
 		mu.Lock()
 		if prevNetIOCounters != nil {
 			for _, currentCounter := range currentNetIOCounters {
+				if !isPhysicalNetworkInterface(currentCounter.Name) {
+					continue
+				}
 				if prevCounter, exists := prevNetIOCounters[currentCounter.Name]; exists {
 					bytesSentDiff := currentCounter.BytesSent - prevCounter.BytesSent
 					bytesRecvDiff := currentCounter.BytesRecv - prevCounter.BytesRecv
@@ -190,7 +199,9 @@ func collectNetwork() {
 		}
 		prevNetIOCounters = make(map[string]net.IOCountersStat)
 		for _, counter := range currentNetIOCounters {
-			prevNetIOCounters[counter.Name] = counter
+			if isPhysicalNetworkInterface(counter.Name) {
+				prevNetIOCounters[counter.Name] = counter
+			}
 		}
 		mu.Unlock()
 	}
