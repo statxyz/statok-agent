@@ -16,6 +16,8 @@ github.com/shoenig/go-m1cpu v0.1.6/go.mod h1:1JJMcUBvfNwpq05QDQVAnx3gUHr9IYF7GNg
 github.com/statxyz/statok-go v0.0.1/go.mod h1:Df815FLexiYA1Qj5NByFOnRIJe4TbxXwFJz/5quw0bg=
 github.com/statxyz/statok-go v0.0.2 h1:lfFsGzuoaedlsma3ftWYD9Kx07kuwFPRxf8Ig9TpAys=
 github.com/statxyz/statok-go v0.0.2/go.mod h1:Df815FLexiYA1Qj5NByFOnRIJe4TbxXwFJz/5quw0bg=
+github.com/statxyz/statok-go v0.0.4 h1:9GW4F7I/JEPCIBSySV2nIFC9qpoojaDxUZY1osqfbME=
+github.com/statxyz/statok-go v0.0.4/go.mod h1:Df815FLexiYA1Qj5NByFOnRIJe4TbxXwFJz/5quw0bg=
 github.com/tklauser/go-sysconf v0.3.12 h1:0QaGUFOdQaIVdPgfITYzaTegZvdCjmYO52cSFAEVmqU=
 github.com/tklauser/go-sysconf v0.3.12/go.mod h1:Ho14jnntGE1fpdOqQEEaiKRpvIavV0hSfmBq8nJbHYI=
 github.com/tklauser/numcpus v0.6.1 h1:ng9scYS7az0Bk4OZLvrNXNSAO2Pxr1XXRAPyjhIx+Fk=

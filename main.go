@@ -73,10 +73,10 @@ func startMemoryCollect() {
 			continue
 		}
 
-		gostatok.EventValue(memoryMetricName, float64(byteToMb(v.Total)), getHostname(), "total")
-		gostatok.EventValue(memoryMetricName, float64(byteToMb(v.Available)), getHostname(), "available")
-		gostatok.EventValue(memoryMetricName, float64(byteToMb(v.Used)), getHostname(), "used")
-		gostatok.EventValue(memoryMetricName, float64(byteToMb(v.Free)), getHostname(), "free")
+		gostatok.EventValue(memoryMetricName, float32(byteToMb(v.Total)), getHostname(), "total")
+		gostatok.EventValue(memoryMetricName, float32(byteToMb(v.Available)), getHostname(), "available")
+		gostatok.EventValue(memoryMetricName, float32(byteToMb(v.Used)), getHostname(), "used")
+		gostatok.EventValue(memoryMetricName, float32(byteToMb(v.Free)), getHostname(), "free")
 	}
 }
 
@@ -107,9 +107,9 @@ func startDiskCollect() {
 
 			diskName := partition.Device
 
-			gostatok.EventValue(diskMetricName, float64(byteToMb(usage.Total)), getHostname(), diskName, "total")
-			gostatok.EventValue(diskMetricName, float64(byteToMb(usage.Used)), getHostname(), diskName, "used")
-			gostatok.EventValue(diskMetricName, float64(byteToMb(usage.Free)), getHostname(), diskName, "available")
+			gostatok.EventValue(diskMetricName, float32(byteToMb(usage.Total)), getHostname(), diskName, "total")
+			gostatok.EventValue(diskMetricName, float32(byteToMb(usage.Used)), getHostname(), diskName, "used")
+			gostatok.EventValue(diskMetricName, float32(byteToMb(usage.Free)), getHostname(), diskName, "available")
 		}
 	}
 }

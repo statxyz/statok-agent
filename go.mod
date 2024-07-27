@@ -4,7 +4,7 @@ go 1.22
 
 require (
 	github.com/shirou/gopsutil/v4 v4.24.6
-	github.com/statxyz/statok-go v0.0.2
+	github.com/statxyz/statok-go v0.0.4
 )
 
 require (
