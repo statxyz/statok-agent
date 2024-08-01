@@ -27,7 +27,7 @@ func startStressTest() {
 				for c := range 4 {
 					for d := range 3 {
 						for _ = range 100 {
-							gostatok.EventValue("stress_v_v1", 100*rand.Float64(), "a_"+strconv.Itoa(a), "b_"+strconv.Itoa(b), "c_"+strconv.Itoa(c), "d_"+strconv.Itoa(d))
+							gostatok.EventValue("stress_v_v2", 100*rand.Float64(), "a_"+strconv.Itoa(a), "b_"+strconv.Itoa(b), "c_"+strconv.Itoa(c), "d_"+strconv.Itoa(d))
 						}
 					}
 				}
