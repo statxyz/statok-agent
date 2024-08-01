@@ -22,11 +22,13 @@ func startStressTest() {
 	for {
 		time.Sleep(time.Second)
 
-		for a := range 100 {
-			for b := range 30 {
-				for c := range 10 {
-					for d := range 2 {
-						gostatok.EventValue("stress_v_v1", 100*rand.Float64(), "a_"+strconv.Itoa(a), "b_"+strconv.Itoa(b), "c_"+strconv.Itoa(c), "d_"+strconv.Itoa(d))
+		for _ = range 100 {
+			for a := range 10 {
+				for b := range 3 {
+					for c := range 2 {
+						for d := range 2 {
+							gostatok.EventValue("stress_v_v1", 100*rand.Float64(), "a_"+strconv.Itoa(a), "b_"+strconv.Itoa(b), "c_"+strconv.Itoa(c), "d_"+strconv.Itoa(d))
+						}
 					}
 				}
 			}
