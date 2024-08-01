@@ -23,7 +23,7 @@ func startStressTest() {
 		time.Sleep(time.Second)
 
 		for _ = range 100 {
-			for a := range 10 {
+			for a := range 30 {
 				for b := range 3 {
 					for c := range 2 {
 						for d := range 2 {
