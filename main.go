@@ -6,35 +6,15 @@ import (
 	"github.com/shirou/gopsutil/v4/mem"
 	"github.com/shirou/gopsutil/v4/net"
 	"github.com/statxyz/statok-go"
-	"math/rand"
 	"net/http"
 	"os"
 	"os/signal"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"sync"
 	"syscall"
 	"time"
 )
-
-func startStressTest() {
-	for {
-		time.Sleep(time.Second)
-
-		for a := range 300 {
-			for b := range 8 {
-				for c := range 4 {
-					for d := range 3 {
-						for _ = range 100 {
-							gostatok.EventValue("stress_v_v2", 100*rand.Float64(), "a_"+strconv.Itoa(a), "b_"+strconv.Itoa(b), "c_"+strconv.Itoa(c), "d_"+strconv.Itoa(d))
-						}
-					}
-				}
-			}
-		}
-	}
-}
 
 func startCPUCollect() {
 	const cpuUsageMetricName = "host_cpu_usage_v3"
@@ -249,7 +229,7 @@ func (c *CustomRoundTripper) RoundTrip(req *http.Request) (*http.Response, error
 
 func main() {
 	gostatok.Init(gostatok.Options{
-		APIKey: "Test",
+		APIKey: "1_Test",
 		//HTTPClient: &http.Client{
 		//	Transport: &CustomRoundTripper{
 		//		Proxied: http.DefaultTransport,
@@ -261,7 +241,6 @@ func main() {
 	go startDiskCollect()
 	go collectDiskIO()
 	go collectNetwork()
-	go startStressTest()
 
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL)
